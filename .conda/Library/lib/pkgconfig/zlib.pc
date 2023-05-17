@@ -1,0 +1,13 @@
+prefix=c:/Users/giris/Documents/Analytics and Modelling/Disaster_Response_Pipeline/.conda/Library
+exec_prefix=c:/Users/giris/Documents/Analytics and Modelling/Disaster_Response_Pipeline/.conda/Library
+libdir=c:/Users/giris/Documents/Analytics and Modelling/Disaster_Response_Pipeline/.conda/Library/lib
+sharedlibdir=c:/Users/giris/Documents/Analytics and Modelling/Disaster_Response_Pipeline/.conda/Library/lib
+includedir=c:/Users/giris/Documents/Analytics and Modelling/Disaster_Response_Pipeline/.conda/Library/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.13
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}

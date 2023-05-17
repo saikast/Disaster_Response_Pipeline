@@ -1,16 +1,64 @@
 import sys
+import pandas as pd
+from sqlalchemy import create_engine
+import warnings
+warnings.filterwarnings('ignore')
 
 
 def load_data(messages_filepath, categories_filepath):
-    pass
+    
+    # load messages dataset
+    messages = pd.read_csv(messages_filepath)
+
+    # load categories dataset
+    categories = pd.read_csv(categories_filepath)
+
+    # merge datasets
+    df = messages.merge(categories, on=('id'))
+
+    return df
 
 
 def clean_data(df):
-    pass
+    """
+    Cleans the dataframe by splitting the 'categories' column into separate columns, 
+    dropping unnecessary columns and values, and removing duplicates.
+
+    Args:
+        df: dataframe to be cleaned.
+
+    Returns:
+        df: Cleaned dataframe with updated columns and no duplicates.
+    """
+    # Split categories column and create a new dataframe
+    categories_split = df['categories'].str.split(';', expand=True)
+    column_names = categories_split.iloc[0].str.split('-', expand=True)[0]
+    categories_split.columns = column_names
+
+    # replace the values in dataframe with only the last numbers and change the type to int
+    categories_clean = categories_split.apply(lambda x: x.str.split('-').str[-1].astype(int))
+
+    # drop the original categories column from `df`
+    df.drop('categories', axis=1, inplace=True)
+
+    # concatenate the original dataframe with the new `new_columns_updated` dataframe
+    df = pd.concat([df, categories_clean], axis=1)
+
+    # replace all the values of 2 with 1
+    df['related'] = df['related'].apply(lambda x : 1 if x == 2 else x)
+
+    # as chile_alone contains only 0's, hence dropped
+    df.drop('child_alone', axis=1, inplace=True)
+
+    # dropping the duplicates
+    df.drop_duplicates(inplace=True)
+
+    return df
 
 
 def save_data(df, database_filename):
-    pass  
+    con = create_engine('sqlite:///' + database_filename, echo=False)  
+    df.to_sql('Disaster_data', con, if_exists='replace', index=False)  
 
 
 def main():

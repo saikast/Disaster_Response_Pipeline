@@ -26,8 +26,8 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
+df = pd.read_sql_table('Disaster_data', engine)
 
 # load model
 model = joblib.load("../models/your_model_name.pkl")
@@ -65,7 +65,42 @@ def index():
             }
         }
     ]
+
     
+    category_columns = list(df.iloc[:, 4:])
+    graphs = []
+
+
+
+    # Your loop integrated into the list
+    for genre in df['genre'].unique():
+        genre_df = df[df['genre'] == genre]
+        category_counts = genre_df[category_columns].sum().sort_values(ascending=False)
+
+        # Get only the top 10 categories
+        category_counts = category_counts[:10]
+    
+        graphs.append(
+            {
+                'data': [
+                    Bar(
+                        x=category_counts.index.tolist(),
+                        y=category_counts.values.tolist()
+                    )
+                ],
+                'layout': {
+                    'title': f'Number of Messages per Category in Genre: {genre.capitalize()}',
+                    'yaxis': {
+                        'title': "Number of Messages"
+                    },
+                    'xaxis': {
+                        'title': "Category",
+                        'tickangle': 90
+                    }
+                }
+            })
+
+
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)

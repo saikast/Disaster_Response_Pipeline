@@ -39,7 +39,7 @@ def load_data(database_filepath):
     conn = sqlite3.connect(database_filepath)
 
     # Read the data from the 'diasterdata' table into a DataFrame
-    df = pd.read_sql_query("SELECT * from disasterdata", con=conn)
+    df = pd.read_sql_query("SELECT * from Disaster_data", con=conn)
     
     # Extract the 'message' column as the feature data
     X = df['message']
